@@ -1,0 +1,45 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <div id="drop-zone" style="width: 100vw; height: 100vh; background-color: cornflowerblue;">
+        <p>Drag 'n drop a directory here!</p>
+    </div>
+
+    <script>
+
+        const worker = new Worker("worker.js");
+
+        document.getElementById("drop-zone").addEventListener("dragover", (e) => {
+            e.preventDefault()
+        })
+
+        document.getElementById("drop-zone").addEventListener("drop", (e) => {
+            e.preventDefault()
+
+            console.log(e)
+
+            if (e.dataTransfer.items) {
+
+                [...e.dataTransfer.items].forEach((item, i) => {
+                    const entry = item.webkitGetAsEntry()
+                    if (entry.isDirectory) {
+                        item.getAsFileSystemHandle().then((handle) => {
+                            console.log(handle)
+                            worker.postMessage(handle)
+                        });
+                    }
+                });
+            } else {
+                // not focused on this path at the present
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>
